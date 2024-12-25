@@ -18,7 +18,7 @@ const userSchema = new Schema({
         lowercase: true
         trim: true
     },
-    fullname: {
+    fullName: {
         type: String,
         required: true
         trim: true
@@ -62,17 +62,17 @@ userSchema.pre('save', function(next){
         return await bcrypt.compare(password, this.password);
     };
 
-    userSchema.methods.generateJWTToken = function(){
+    userSchema.methods.generateAccessToken = function(){
         return jwt.sign(
             {
                 _id: this._id,
                 email: this.email,
                 name: this.name,
-                fullname: this.fullname
+                fullName: this.fullName
             },
-            process.env.JWT_SECRET,
+            process.env.ACCESS_TOKEN_SECRET,
             {
-                expiresIn: '24h'
+                expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN
             }
         );
     };
@@ -82,9 +82,9 @@ userSchema.pre('save', function(next){
             {
                 _id: this._id,
             },
-            process.env.JWT_SECRET,
+            process.env.REFRESH_TOKEN_SECRET,
             {
-                expiresIn: '1y'
+                expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN
             }
         );
     };
